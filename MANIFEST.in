@@ -1,0 +1,4 @@
+include LICENSE
+include README.rst
+recursive-include wagtail_video/static *
+recursive-include wagtail_video/templates *

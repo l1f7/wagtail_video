@@ -1,0 +1,22 @@
+{% load i18n %}
+{% trans "Choose a video file" as  choose_str %}
+{% include "wagtailadmin/shared/header.html" with title=choose_str tabbed=1 merged=1 icon="media" %}
+
+
+<div class="tab-content">
+    <section id="search" class="{% if not uploadform.errors %}active {% endif %}nice-padding">
+        <form class="video-search search-bar" action="{% url 'wagtail_video:chooser' %}" method="GET" novalidate>
+            <ul class="fields">
+                {% for field in searchform %}
+                    {% include "wagtailadmin/shared/field_as_li.html" with field=field %}
+                {% endfor %}
+                {% if collections %}
+                    {% include "wagtailadmin/shared/collection_chooser.html" %}
+                {% endif %}
+            </ul>
+        </form>
+        <div id="search-results" class="listing video">
+            {% include "wagtail_video/chooser/results.html" %}
+        </div>
+    </section>
+</div>

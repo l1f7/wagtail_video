@@ -1,0 +1,38 @@
+{% extends "wagtailadmin/shared/field.html" %}
+{% load i18n %}
+{% block form_field %}
+  <div class="videofield">
+    {% if field.value %}
+      <div class="videofield-top">
+        <div>
+          <span><a href="{{ video.url }}" class="icon icon-media">{{ video.filename }}</a></span>
+        </div>
+        
+        {% if not field.field.required %}
+          <div for="{{ field.html_name }}-clear">
+            Remove
+            <input type="checkbox" id="{{ field.html_name }}-clear_id" name="{{ field.html_name }}-clear">
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+    <div class="videofield-bottom">
+      <div for="{{ field.name }}">
+        Choose
+        <input type="file" id="{{ field.auto_id }}" name="{{ field.name }}">
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .videofield {
+      padding: 16px 0 0;
+    }
+
+    .videofield-top {
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+{% endblock %}

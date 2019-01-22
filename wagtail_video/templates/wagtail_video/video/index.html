@@ -1,0 +1,65 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n %}
+{% block titletag %}Video{% endblock %}
+{% block extra_js %}
+    {{ block.super }}
+    <script>
+        window.headerSearch = {
+            url: "{% url 'wagtail_video:index' %}",
+            termInput: "#id_q",
+            targetOutput: "#video-results"
+        };
+
+        $(function() {
+            $('#collection_chooser_collection_id').change(function() {
+                this.form.submit();
+            })
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    {% trans "Video" as video_str %}
+    <header class="nice-padding">
+        <div class="row">
+            <div class="left">
+                <div class="col">
+                    <h1 class="icon icon-video">
+                    {{ video_str }}
+                    </h1>
+                </div>
+                <form class="col search-form" action="{% url 'wagtail_video:index' %}{% if query_parameters %}?{{ query_parameters }}{% endif %}" method="get" novalidate>
+                    <ul class="fields">
+                        {% for field in search_form %}
+                            {% include "wagtailadmin/shared/field_as_li.html" with field=field field_classes="field-small iconfield" input_classes="icon-search" %}
+                        {% endfor %}
+                        <li class="submit visuallyhidden"><input type="submit" value="Search" class="button" /></li>
+                    </ul>
+                </form>
+            </div>
+            {% if user_can_add %}
+                <div class="right">
+                    <div class="col">
+                        <div class="addbutton">
+                            <a href="{% url 'wagtail_video:add' %}" class="button bicolor icon icon-plus">{% trans "Add video" %}</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="nice-padding">
+        {% if collections %}
+            <form class="image-search search-bar" action="{% url 'wagtail_video:index' %}" method="GET" novalidate>
+                <ul class="fields">
+                    {% include "wagtailadmin/shared/collection_chooser.html" %}
+                </ul>
+            </form>
+        {% endif %}
+
+        <div id="video-results" class="video">
+            {% include "wagtail_video/video/results.html" %}
+        </div>
+    </div>
+{% endblock %}

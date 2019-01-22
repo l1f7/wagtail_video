@@ -1,0 +1,8 @@
+{% extends "wagtailadmin/widgets/chooser.html" %}
+{% block chooser_class %}video-chooser{% endblock %}
+
+{% block chosen_state_view %}
+    <span class="title">{{ video.title }}</span>
+{% endblock %}
+
+{% block edit_chosen_item_url %}{% if video %}{% url 'wagtail_video:edit' video.id %}{% endif %}{% endblock %}
