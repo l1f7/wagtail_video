@@ -19,6 +19,7 @@ from wagtail.core.models import CollectionMember
 from wagtail.search import index
 from wagtail.search.queryset import SearchableQuerySetMixin
 
+
 class VideoQuerySet(SearchableQuerySetMixin, models.QuerySet):
     pass
 
@@ -76,7 +77,7 @@ class AbstractVideo(CollectionMember, index.Indexed, models.Model):
     @property
     def ogg_url(self):
         return self.ogg.url
-    
+
     @property
     def webm_url(self):
         return self.webm.url

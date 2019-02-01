@@ -31,4 +31,11 @@ setup(
         'Framework :: Django :: 1.9',
         'Topic :: Internet :: WWW/HTTP :: Site Management',
     ],
+    install_requires=[
+        'wagtail>=2.4',
+        'Django>=2.1'
+    ],
+    setup_requires=[
+        "flake8"
+    ]
 )

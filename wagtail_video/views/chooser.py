@@ -8,7 +8,7 @@ from wagtail_video.permissions import permission_policy
 from django.urls import reverse
 
 from wagtail.utils.pagination import paginate
-from wagtail.admin.forms import SearchForm
+from wagtail.admin.forms.search import SearchForm
 from wagtail.admin.modal_workflow import render_modal_workflow
 from wagtail.admin.utils import PermissionPolicyChecker
 from wagtail.admin.utils import popular_tags_for_model
@@ -96,7 +96,10 @@ def chooser(request):
     #     'is_searching': False,
     # })
 
-    return render_modal_workflow(request, 'wagtail_video/chooser/chooser.html', None,
+    return render_modal_workflow(
+        request,
+        'wagtail_video/chooser/chooser.html',
+        None,
         template_vars={
             'video_files': video_files,
             'searchform': searchform,
@@ -108,7 +111,7 @@ def chooser(request):
         json_data={
             'step': 'chooser',
         }
-    )
+     )
 
 
 # def video_chosen(request, video_id):
@@ -116,8 +119,8 @@ def chooser(request):
 #     json_data = get_video_json(video)
 #     json_data['step'] = 'video_chosen'
 #     return render_modal_workflow(
-#         request, 
-#         None, 
+#         request,
+#         None,
 #         None, #'wagtail_video/chooser/video_chosen.js',
 #         json_data=json_data
 #     )

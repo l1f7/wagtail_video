@@ -1,25 +1,21 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.translation import ugettext as _
 from django.views.decorators.vary import vary_on_headers
-
-from wagtail_video.forms import get_video_form
-from wagtail_video.models import get_video_model
-from wagtail_video.permissions import permission_policy
-
-from django.urls import reverse
-
-from wagtail.utils.pagination import paginate
 from wagtail.admin import messages
-from wagtail.admin.forms import SearchForm
+from wagtail.admin.forms.search import SearchForm
 from wagtail.admin.utils import (
     PermissionPolicyChecker, permission_denied, popular_tags_for_model
 )
 from wagtail.core.models import Collection
 from wagtail.search.backends import get_search_backends
+from wagtail.utils.pagination import paginate
 
-from wagtail.admin.edit_handlers import FieldPanel
+from wagtail_video.forms import get_video_form
+from wagtail_video.models import get_video_model
+from wagtail_video.permissions import permission_policy
 
 permission_checker = PermissionPolicyChecker(permission_policy)
 
