@@ -93,6 +93,8 @@ def chooser(request):
         collections = Collection.objects.all()
         if len(collections) < 2:
             collections = None
+        else:
+            collections = Collection.order_for_display(collections)
 
         video_files = Video.objects.order_by('-created_at')
         paginator, video_files = paginate(request, video_files, per_page=10)
@@ -109,6 +111,7 @@ def chooser(request):
         'wagtail_video/chooser/chooser.html',
         None,
         template_vars={
+            'collections': collections,
             'video_files': video_files,
             'searchform': searchform,
             'is_searching': False,

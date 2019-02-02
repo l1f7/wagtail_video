@@ -27,7 +27,10 @@ function createVideoChooser(id) {
                     function search() {
                         $.ajax({
                             url: searchUrl,
-                            data: {q: $('#id_q').val()},
+                            data: {
+                              q: $('#id_q').val(),
+                              collection_id: $('#collection_chooser_collection_id').val()
+                            },
                             success: function(data, status) {
                                 $('#search-results').html(data);
                                 ajaxifyLinks($('#search-results'));
@@ -87,7 +90,7 @@ function createVideoChooser(id) {
 
                       return false;
                     });
-
+                    $('#collection_chooser_collection_id').on('change', search);
                     $('form.video-search', modal.body).submit(search);
 
                     $('#id_q').on('input', function() {
