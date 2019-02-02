@@ -106,6 +106,24 @@ function createVideoChooser(id) {
 
                     //{% url 'wagtailadmin_tag_autocomplete' as autocomplete_url %}
 
+                    function populateTitle(context) {
+                      // Note: There are two inputs with `#id_title` on the page.
+                      // The page title and image title. Select the input inside the modal body.
+                      var fileWidget = $('#id_mp4', context);
+                      fileWidget.on('change', function () {
+                        var titleWidget = $('#id_title', context);
+                        var title = titleWidget.val();
+                        if (title === '') {
+                          // The file widget value example: `C:\fakepath\image.jpg`
+                          var parts = fileWidget.val().split('\\');
+                          var fileName = parts[parts.length - 1].replace(/\.[^/.]+$/, "");
+                          titleWidget.val(fileName);
+                        }
+                      });
+                    }
+
+                    populateTitle(modal.body);
+
                     /* Add tag entry interface (with autocompletion) to the tag field of the embed video upload form */
                     $('#id_tags', modal.body).tagit({
                         autocomplete: {source: jsonData.autocomplete_url}
