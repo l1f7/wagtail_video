@@ -95,7 +95,18 @@ function createVideoChooser(id) {
             'responses': {
                 'videoChosen': function(videoData) {
                     input.val(videoData.id);
-                    videoTitle.text(videoData.title)
+                    videoTitle.text(videoData.title);
+
+                    var videoElement = chooserElement.find("video").get(0);
+                    videoElement.innerHTML = '';
+                    if (videoData.mp4_url) {
+                      var source = document.createElement('source');
+                      source.setAttribute('src', videoData.mp4_url);
+                      source.setAttribute('type', "video/mp4");
+
+                      videoElement.appendChild(source);
+                      videoElement.load();
+                    }
                     chooserElement.removeClass('blank');
                     editLink.attr('href', videoData.edit_link);
                 }

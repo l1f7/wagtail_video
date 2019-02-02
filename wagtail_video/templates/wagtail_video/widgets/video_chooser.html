@@ -2,7 +2,12 @@
 {% block chooser_class %}video-chooser{% endblock %}
 
 {% block chosen_state_view %}
-    <span class="title">{{ video.title }}</span>
+  <span class="title">{{ video.title }}</span>
+  {% if video %}
+      <video controls style="max-width: 100%; margin-bottom: 20px;">
+        <source src="{{ video.mp4_url }}" type="video/mp4">
+      </video>
+  {% endif %}
 {% endblock %}
 
 {% block edit_chosen_item_url %}{% if video %}{% url 'wagtail_video:edit' video.id %}{% endif %}{% endblock %}

@@ -27,6 +27,7 @@ def get_video_json(video):
         'id': video.id,
         'title': video.title,
         'edit_link': reverse('wagtail_video:edit', args=(video.id,)),
+        'mp4_url': video.mp4_url if video.mp4 else None
     })
 
 
@@ -39,6 +40,7 @@ def get_video_result_data(video):
         'id': video.id,
         'edit_link': reverse('wagtail_video:edit', args=(video.id,)),
         'title': video.title,
+        'mp4_url': video.mp4_url if video.mp4 else None
     }
 
 
