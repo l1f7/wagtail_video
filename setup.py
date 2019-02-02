@@ -34,8 +34,5 @@ setup(
     install_requires=[
         'wagtail>=2.4',
         'Django>=2.1'
-    ],
-    setup_requires=[
-        "flake8"
     ]
 )

@@ -56,6 +56,38 @@ function createVideoChooser(id) {
 
                     ajaxifyLinks(modal.body);
 
+
+                    $('form.video-upload', modal.body).on('submit', function() {
+                      var formdata = new FormData(this);
+
+                      if ($('#id_title', modal.body).val() == '') {
+                        var li = $('#id_title', modal.body).closest('li');
+                        if (!li.hasClass('error')) {
+                          li.addClass('error');
+                          $('#id_title', modal.body).closest('.field-content').append('<p class="error-message"><span>This field is required.</span></p>')
+                        }
+                        setTimeout(cancelSpinner, 500);
+                      } else {
+                        $.ajax({
+                          url: this.action,
+                          data: formdata,
+                          processData: false,
+                          contentType: false,
+                          type: 'POST',
+                          dataType: 'text',
+                          success: modal.loadResponseText,
+                          error: function(response, textStatus, errorThrown) {
+                            message = jsonData['error_message'] + '<br />' + errorThrown + ' - ' + response.status;
+                            $('#upload').append(
+                              '<div class="help-block help-critical">' +
+                              '<strong>' + jsonData['error_label'] + ': </strong>' + message + '</div>');
+                          }
+                        });
+                      }
+
+                      return false;
+                    });
+
                     $('form.video-search', modal.body).submit(search);
 
                     $('#id_q').on('input', function() {

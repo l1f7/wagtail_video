@@ -1,7 +1,9 @@
 import json
 
 from django.shortcuts import get_object_or_404, render
+from wagtail.search.backends import get_search_backends
 
+from wagtail_video.forms import get_video_form
 from wagtail_video.models import get_video_model
 from wagtail_video.permissions import permission_policy
 
@@ -51,7 +53,11 @@ def chooser(request):
 
     if request.user.has_perm('wagtail_video.add_video'):
         can_add = True
+        VideoForm = get_video_form(Video)
+        video = Video(uploaded_by_user=request.user)
+        uploadform = VideoForm(user=request.user, instance=video)
     else:
+        uploadform = None
         can_add = False
 
     q = None
@@ -107,6 +113,7 @@ def chooser(request):
             'searchform': searchform,
             'is_searching': False,
             'can_add': can_add,
+            'uploadform': uploadform,
             'query_string': q,
             'popular_tags': popular_tags_for_model(Video),
         },
@@ -133,4 +140,47 @@ def video_chosen(request, video_id):
     return render_modal_workflow(
         request, None, None,
         None, json_data={'step': 'video_chosen', 'result': get_video_result_data(video)}
+    )
+
+
+@permission_checker.require('add')
+def chooser_upload(request):
+    Video = get_video_model()
+    VideoForm = get_video_form(Video)
+
+    if request.POST:
+        video = Video(uploaded_by_user=request.user)
+        form = VideoForm(request.POST, request.FILES, instance=video, user=request.user)
+        if form.is_valid():
+            form.save()
+
+            # Reindex the video entry to make sure all tags are indexed
+            for backend in get_search_backends():
+                backend.add(video)
+
+            return render_modal_workflow(
+                request, None, None,
+                None, json_data={'step': 'video_chosen', 'result': get_video_result_data(video)}
+            )
+    else:
+        video = Video(uploaded_by_user=request.user)
+        form = VideoForm(user=request.user, instance=video)
+
+    video_files = Video.objects.order_by('-created_at')
+    paginator, video_files = paginate(request, video_files, per_page=10)
+
+    context = {
+        'video_files': video_files,
+        'searchform': SearchForm(),
+        'is_searching': False,
+        'can_add': True,
+        'uploadform': form,
+        'popular_tags': popular_tags_for_model(Video),
+    }
+
+    return render_modal_workflow(
+        request, 'wagtailimages/chooser/chooser.html', None, context,
+        json_data={
+            'step': 'chooser',
+        }
     )
