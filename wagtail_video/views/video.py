@@ -1,17 +1,18 @@
 from __future__ import unicode_literals
 
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.translation import ugettext as _
 from django.views.decorators.vary import vary_on_headers
 from wagtail.admin import messages
 from wagtail.admin.forms.search import SearchForm
-from wagtail.admin.utils import (
-    PermissionPolicyChecker, permission_denied, popular_tags_for_model
+from wagtail.admin.auth import (
+    PermissionPolicyChecker, permission_denied
 )
+from wagtail.admin.models import popular_tags_for_model
 from wagtail.core.models import Collection
 from wagtail.search.backends import get_search_backends
-from wagtail.utils.pagination import paginate
 
 from wagtail_video.forms import get_video_form
 from wagtail_video.models import get_video_model
@@ -41,6 +42,7 @@ def index(request):
     current_collection = None
     collection_id = request.GET.get('collection_id')
     if collection_id:
+        # noinspection PyUnresolvedReferences
         try:
             current_collection = Collection.objects.get(id=collection_id)
             video = video.filter(collection=current_collection)
@@ -58,7 +60,8 @@ def index(request):
         form = SearchForm(placeholder=_("Search video"))
 
     # Pagination
-    paginator, video = paginate(request, video)
+    paginator = Paginator(video, per_page=25)
+    video = paginator.get_page(request.GET.get('p'))
 
     collections = permission_policy.collections_user_has_any_permission_for(
         request.user, ['add', 'change']
@@ -216,7 +219,9 @@ def usage(request, video_id):
     Video = get_video_model()
     video = get_object_or_404(Video, id=video_id)
 
-    paginator, used_by = paginate(request, video.get_usage())
+
+    paginator = Paginator(video.get_usage(), per_page=25)
+    used_by = paginator.get_page(request.GET.get('p'))
 
     return render(request, "wagtail_video/video/usage.html", {
         'video': video,
