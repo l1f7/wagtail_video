@@ -1,6 +1,9 @@
 import json
 
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
+from wagtail.admin.auth import PermissionPolicyChecker
+from wagtail.admin.models import popular_tags_for_model
 from wagtail.search.backends import get_search_backends
 
 from wagtail_video.forms import get_video_form
@@ -9,11 +12,8 @@ from wagtail_video.permissions import permission_policy
 
 from django.urls import reverse
 
-from wagtail.utils.pagination import paginate
 from wagtail.admin.forms.search import SearchForm
 from wagtail.admin.modal_workflow import render_modal_workflow
-from wagtail.admin.utils import PermissionPolicyChecker
-from wagtail.admin.utils import popular_tags_for_model
 from wagtail.core.models import Collection
 
 permission_checker = PermissionPolicyChecker(permission_policy)
@@ -80,7 +80,8 @@ def chooser(request):
             is_searching = False
 
         # Pagination
-        paginator, video_files = paginate(request, video_files, per_page=10)
+        paginator = Paginator(video_files, per_page=10)
+        video_files = paginator.get_page(request.GET.get('p'))
 
         return render(request, "wagtail_video/chooser/results.html", {
             'video_files': video_files,
@@ -97,7 +98,8 @@ def chooser(request):
             collections = Collection.order_for_display(collections)
 
         video_files = Video.objects.order_by('-created_at')
-        paginator, video_files = paginate(request, video_files, per_page=10)
+        paginator = Paginator(video_files, per_page=10)
+        video_files = paginator.get_page(request.GET.get('p'))
 
     # return render_modal_workflow(request, 'wagtail_video/chooser/chooser.html', None, {
     #     'video_files': video_files,
@@ -170,7 +172,8 @@ def chooser_upload(request):
         form = VideoForm(user=request.user, instance=video)
 
     video_files = Video.objects.order_by('-created_at')
-    paginator, video_files = paginate(request, video_files, per_page=10)
+    paginator = Paginator(video_files, per_page=10)
+    video_files = paginator.get_page(request.GET.get('p'))
 
     context = {
         'video_files': video_files,
