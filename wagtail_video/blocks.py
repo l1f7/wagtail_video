@@ -16,5 +16,5 @@ class VideoChooserBlock(ChooserBlock):
         from wagtail_video.widgets import AdminVideoChooser
         return AdminVideoChooser
 
-    def render_basic(self, value):
+    def render_basic(self, value, **kwargs):
         raise NotImplementedError('You need to implement %s.render_basic' % self.__class__.__name__)

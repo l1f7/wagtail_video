@@ -31,4 +31,8 @@ setup(
         'Framework :: Django :: 1.9',
         'Topic :: Internet :: WWW/HTTP :: Site Management',
     ],
+    install_requires=[
+        'wagtail>=2.7',
+        'Django>=2.1'
+    ]
 )

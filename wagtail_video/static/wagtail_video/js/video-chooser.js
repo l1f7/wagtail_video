@@ -27,7 +27,10 @@ function createVideoChooser(id) {
                     function search() {
                         $.ajax({
                             url: searchUrl,
-                            data: {q: $('#id_q').val()},
+                            data: {
+                              q: $('#id_q').val(),
+                              collection_id: $('#collection_chooser_collection_id').val()
+                            },
                             success: function(data, status) {
                                 $('#search-results').html(data);
                                 ajaxifyLinks($('#search-results'));
@@ -56,6 +59,38 @@ function createVideoChooser(id) {
 
                     ajaxifyLinks(modal.body);
 
+
+                    $('form.video-upload', modal.body).on('submit', function() {
+                      var formdata = new FormData(this);
+
+                      if ($('#id_title', modal.body).val() == '') {
+                        var li = $('#id_title', modal.body).closest('li');
+                        if (!li.hasClass('error')) {
+                          li.addClass('error');
+                          $('#id_title', modal.body).closest('.field-content').append('<p class="error-message"><span>This field is required.</span></p>')
+                        }
+                        setTimeout(cancelSpinner, 500);
+                      } else {
+                        $.ajax({
+                          url: this.action,
+                          data: formdata,
+                          processData: false,
+                          contentType: false,
+                          type: 'POST',
+                          dataType: 'text',
+                          success: modal.loadResponseText,
+                          error: function(response, textStatus, errorThrown) {
+                            message = jsonData['error_message'] + '<br />' + errorThrown + ' - ' + response.status;
+                            $('#upload').append(
+                              '<div class="help-block help-critical">' +
+                              '<strong>' + jsonData['error_label'] + ': </strong>' + message + '</div>');
+                          }
+                        });
+                      }
+
+                      return false;
+                    });
+                    $('#collection_chooser_collection_id').on('change', search);
                     $('form.video-search', modal.body).submit(search);
 
                     $('#id_q').on('input', function() {
@@ -70,6 +105,24 @@ function createVideoChooser(id) {
                     });
 
                     //{% url 'wagtailadmin_tag_autocomplete' as autocomplete_url %}
+
+                    function populateTitle(context) {
+                      // Note: There are two inputs with `#id_title` on the page.
+                      // The page title and image title. Select the input inside the modal body.
+                      var fileWidget = $('#id_mp4', context);
+                      fileWidget.on('change', function () {
+                        var titleWidget = $('#id_title', context);
+                        var title = titleWidget.val();
+                        if (title === '') {
+                          // The file widget value example: `C:\fakepath\image.jpg`
+                          var parts = fileWidget.val().split('\\');
+                          var fileName = parts[parts.length - 1].replace(/\.[^/.]+$/, "");
+                          titleWidget.val(fileName);
+                        }
+                      });
+                    }
+
+                    populateTitle(modal.body);
 
                     /* Add tag entry interface (with autocompletion) to the tag field of the embed video upload form */
                     $('#id_tags', modal.body).tagit({
@@ -95,7 +148,18 @@ function createVideoChooser(id) {
             'responses': {
                 'videoChosen': function(videoData) {
                     input.val(videoData.id);
-                    videoTitle.text(videoData.title)
+                    videoTitle.text(videoData.title);
+
+                    var videoElement = chooserElement.find("video").get(0);
+                    videoElement.innerHTML = '';
+                    if (videoData.mp4_url) {
+                      var source = document.createElement('source');
+                      source.setAttribute('src', videoData.mp4_url);
+                      source.setAttribute('type', "video/mp4");
+
+                      videoElement.appendChild(source);
+                      videoElement.load();
+                    }
                     chooserElement.removeClass('blank');
                     editLink.attr('href', videoData.edit_link);
                 }

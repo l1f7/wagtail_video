@@ -9,9 +9,10 @@ from wagtail_video.permissions import \
     permission_policy as video_permission_policy
 
 from wagtail.admin import widgets
-from wagtail.admin.forms import (
+from wagtail.admin.forms.collections import (
     BaseCollectionMemberForm, collection_member_permission_formset_factory
 )
+
 
 class BaseVideoForm(BaseCollectionMemberForm):
     permission_policy = video_permission_policy
