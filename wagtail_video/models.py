@@ -12,8 +12,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from django.urls import reverse
 
-from taggit.managers import TaggableManager
-
+from wagtail import VERSION as WAGTAIL_VERSION
 if WAGTAIL_VERSION < (2, 9):
     from wagtail.admin.utils import get_object_usage
 else:
@@ -21,6 +20,8 @@ else:
 from wagtail.core.models import CollectionMember
 from wagtail.search import index
 from wagtail.search.queryset import SearchableQuerySetMixin
+
+from taggit.managers import TaggableManager
 
 
 class VideoQuerySet(SearchableQuerySetMixin, models.QuerySet):
